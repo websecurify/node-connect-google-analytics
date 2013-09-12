@@ -1,0 +1,14 @@
+var connect = require('connect');
+var googleAnalytics = require('../../../lib/index');
+
+// ---
+
+connect().use(googleAnalytics.middleware({debug: true})).use(function(req, res){
+	res.ga.collect.event({trackingId: 'TID', clientId: 'CID', category: 'Request', action: 'get', label: req.url}, function (err) {
+		if (err) {
+			console.log(err);
+		}
+	});
+	
+	res.end('<html><body><h1>Hello World</h1></body></html>\n');
+}).listen(3000);
