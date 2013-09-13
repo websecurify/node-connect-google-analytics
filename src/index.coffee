@@ -5,6 +5,7 @@ https = require 'https'
 post = (query, callback) ->
 	query = ("#{key}=#{encodeURIComponent(value)}" for key, value of query when value).join '&'
 	options =
+		method: 'POST'
 		host: 'www.google-analytics.com'
 		path: '/collect'
 		headers:
