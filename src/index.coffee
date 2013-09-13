@@ -9,8 +9,9 @@ post = (query, callback) ->
 		host: 'www.google-analytics.com'
 		path: '/collect'
 		headers:
-			'Content-Type': 'application/x-www-form-urlencoded',
+			'Content-Type': 'application/x-www-form-urlencoded'
 			'Content-Length': query.length
+			'User-Agent': 'CGA/0.0.4 (+http://github.com/websecurify/connect-google-analytics)'
 			
 	request = https.request options, (res) ->
 		return callback new Error 'cannot send for collection' if res.statusCode != 200
