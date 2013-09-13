@@ -3,10 +3,14 @@ https = require 'https'
 # ---
 
 post = (query, callback) ->
+	query = ("#{key}=#{encodeURIComponent(value)}" for key, value of query when value).join '&'
 	options =
 		host: 'www.google-analytics.com'
 		path: '/collect'
-		
+		headers:
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'Content-Length': query.length
+			
 	request = https.request options, (res) ->
 		return callback new Error 'cannot send for collection' if res.statusCode != 200
 		
@@ -15,7 +19,7 @@ post = (query, callback) ->
 	request.on 'error', (error) ->
 		return callback error
 		
-	request.write(("#{key}=#{encodeURIComponent(value)}" for key, value of query when value).join '&')
+	request.write(query)
 	request.end()
 	
 # ---
