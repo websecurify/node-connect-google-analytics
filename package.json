@@ -1,6 +1,6 @@
 {
 	"name": "connect-google-analytics",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"author": "Websecurify <contact@websecurify.com>",
 	"description": "Connect middleware for Google Analytics and more.",
 	"license": "MIT",
