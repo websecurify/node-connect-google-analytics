@@ -59,10 +59,11 @@ exports.middleware = (config={}) ->
 		res.ga ?= res.analytics ?= {}
 		res.ga.collect ?= res.analytics.collect ?= {}
 		
-		res.ga.collect.event = res.analytics.collect.event = (options, callback) ->
-			options.trackingId ?= config.trackingId
+		res.ga.collect.event = res.analytics.collect.event = (query, callback) ->
+			query.debug ?= config.debug
+			query.trackingId ?= config.trackingId
 			
-			exports.event callback
+			exports.event query, callback
 			
 		return do next
 		
