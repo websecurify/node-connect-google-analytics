@@ -2,8 +2,9 @@ https = require 'https'
 
 # ---
 
-post = (query, callback) ->
+exports.post = (query, callback) ->
 	query = ("#{key}=#{encodeURIComponent(value)}" for key, value of query when value).join '&'
+	
 	options =
 		method: 'POST'
 		host: 'www.google-analytics.com'
@@ -26,34 +27,42 @@ post = (query, callback) ->
 	
 # ---
 
+exports.event = (options, callback) ->
+	return callback new Error 'no tracking id specified' if not options.trackingId
+	return callback new Error 'no client id specified' if not options.clientId
+	return callback new Error 'no category specified' if not options.category
+	return callback new Error 'no action specified' if not options.action
+	
+	callback ?= () ->
+	
+	query =
+		v: 1
+		tid: options.trackingId
+		cid: options.clientId
+		t: 'event'
+		ec: options.category
+		ea: options.action
+		el: options.label
+		ev: options.value
+		
+	if options.debug
+		console.log query
+		
+		return callback null
+	else
+		exports.post query, callback
+		
+# ---
+
 exports.middleware = (config={}) ->
 	(req, res, next) ->
 		res.ga ?= res.analytics ?= {}
 		res.ga.collect ?= res.analytics.collect ?= {}
 		
 		res.ga.collect.event = res.analytics.collect.event = (options, callback) ->
-			options ?= {}
-			callback ?= () ->
+			options.trackingId ?= config.trackingId
 			
-			query =
-				v: 1
-				tid: options.trackingId or config.trackingId or null
-				cid: options.clientId or null
-				t: 'event',
-				ec: options.category or null
-				ea: options.action or null
-				el: options.label or null
-				ev: options.value or null
-				
-			return callback new Error 'no tracking id specified' if not query.tid
-			return callback new Error 'no client id specified' if not query.cid
-			return callback new Error 'no category specified' if not query.ec
-			return callback new Error 'no action specified' if not query.ea
+			exports.event callback
 			
-			if config.debug or options.debug
-				console.log query if config.debug or options.debug
-			else
-				post query, callback
-				
-		return next()
+		return do next
 		
